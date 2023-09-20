@@ -9,7 +9,6 @@ from src.modelo.interprete import Interprete
 
 
 class InterpreteTestCase(unittest.TestCase):
-
     def setUp(self):
         self.session = Session()
         self.coleccion = Coleccion()
@@ -20,15 +19,27 @@ class InterpreteTestCase(unittest.TestCase):
         nombre_interprete = self.data_factory.name()
         texto_curiosidades = self.data_factory.text()
         self.coleccion.agregar_interprete(nombre_interprete, texto_curiosidades, -1)
-        consulta = self.session.query(Interprete).filter(Interprete.nombre == nombre_interprete).first().nombre
+        consulta = (
+            self.session.query(Interprete)
+            .filter(Interprete.nombre == nombre_interprete)
+            .first()
+            .nombre
+        )
         self.assertEqual(consulta, nombre_interprete)
 
     def testEditarInterprete(self):
         nombre_interprete = self.data_factory.name()
         texto_curiosidades = self.data_factory.text()
         self.coleccion.agregar_interprete(nombre_interprete, texto_curiosidades, -1)
-        consulta1 = self.session.query(Interprete).filter(Interprete.nombre == nombre_interprete).first().id
-        consulta2 = self.coleccion.editar_interprete(consulta1, nombre_interprete, texto_curiosidades)
+        consulta1 = (
+            self.session.query(Interprete)
+            .filter(Interprete.nombre == nombre_interprete)
+            .first()
+            .id
+        )
+        consulta2 = self.coleccion.editar_interprete(
+            consulta1, nombre_interprete, texto_curiosidades
+        )
         self.assertTrue(consulta2)
 
     def testEliminarInterprete(self):
@@ -42,7 +53,11 @@ class InterpreteTestCase(unittest.TestCase):
         self.assertEqual(len(consulta1), len(consulta2))
 
     def test_buscar_coincidencia_exacta(self):
-        consulta1 = self.session.query(Interprete).filter(Interprete.nombre == "Jorge Celedón").first()
+        consulta1 = (
+            self.session.query(Interprete)
+            .filter(Interprete.nombre == "Jorge Celedón")
+            .first()
+        )
         if consulta1 is None:
             # Texto aleatorio
             texto_curiosidades = self.data_factory.text()
@@ -53,14 +68,29 @@ class InterpreteTestCase(unittest.TestCase):
             minutos_cancion = self.data_factory.pyint(0, 60)
             segundos_cancion = self.data_factory.pyint(0, 60)
             compositor_cancion = self.data_factory.name()
-            self.coleccion.agregar_cancion(titulo_cancion, minutos_cancion, segundos_cancion, compositor_cancion, -1,
-                                           [{'id': 'n', 'nombre': "Jorge Celedón",
-                                             'texto_curiosidades': texto_curiosidades}])
+            self.coleccion.agregar_cancion(
+                titulo_cancion,
+                minutos_cancion,
+                segundos_cancion,
+                compositor_cancion,
+                -1,
+                [
+                    {
+                        "id": "n",
+                        "nombre": "Jorge Celedón",
+                        "texto_curiosidades": texto_curiosidades,
+                    }
+                ],
+            )
         consulta2 = self.coleccion.buscar_canciones_por_interprete("Jorge Celedón")
         self.assertEqual(len(consulta2), 1)
 
     def test_buscar_cualquier_coincidencia(self):
-        consulta1 = self.session.query(Interprete).filter(Interprete.nombre == "Jorge Velosa").first()
+        consulta1 = (
+            self.session.query(Interprete)
+            .filter(Interprete.nombre == "Jorge Velosa")
+            .first()
+        )
         if consulta1 is None:
             texto_curiosidades = self.data_factory.text()
             self.coleccion.agregar_interprete("Jorge Velosa", texto_curiosidades, -1)
@@ -68,8 +98,19 @@ class InterpreteTestCase(unittest.TestCase):
             minutos_cancion = self.data_factory.pyint(0, 60)
             segundos_cancion = self.data_factory.pyint(0, 60)
             compositor_cancion = self.data_factory.name()
-            self.coleccion.agregar_cancion(titulo_cancion, minutos_cancion, segundos_cancion, compositor_cancion, -1,
-                                           [{'id': 'n', 'nombre': 'Jorge Velosa',
-                                             'texto_curiosidades': texto_curiosidades}])
+            self.coleccion.agregar_cancion(
+                titulo_cancion,
+                minutos_cancion,
+                segundos_cancion,
+                compositor_cancion,
+                -1,
+                [
+                    {
+                        "id": "n",
+                        "nombre": "Jorge Velosa",
+                        "texto_curiosidades": texto_curiosidades,
+                    }
+                ],
+            )
         consulta2 = self.coleccion.buscar_canciones_por_interprete("Jorge")
         self.assertEqual(len(consulta2), 2)

@@ -1,4 +1,4 @@
-pipeline { 
+pipeline {
     agent any
     environment {
         HOME = "${WORKSPACE}"
@@ -6,10 +6,10 @@ pipeline {
         GIT_REPO = 'TutorialCancionesTags'
     }
     stages {
-        stage('Checkout') { 
+        stage('Checkout') {
             steps {
                 scmSkip(deleteBuild: true, skipPattern:'.*\\[ci-skip\\].*')
-                git branch: 'main',  
+                git branch: 'main',
                 credentialsId: env.GIT_CREDENTIAL_ID,
                 url: 'https://github.com/MISW-4101-Practicas/' + env.GIT_REPO
             }
@@ -39,7 +39,7 @@ pipeline {
                         sh '''
                             python -m coverage run -m unittest discover -s tests -v
                             python -m coverage html
-                        ''' 
+                        '''
                     }
                 }
             }
@@ -73,12 +73,12 @@ pipeline {
                     sh('git commit -m "[ci-skip] GitInspector report added"')
                     sh('git pull https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/MISW-4101-Practicas/${GIT_REPO} main')
                     sh('git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/MISW-4101-Practicas/${GIT_REPO} main')
-                }  
+                }
             }
         }
     }
-    post { 
-      always { 
+    post {
+      always {
          // Clean workspace
          cleanWs deleteDirs: true
       }

@@ -13,11 +13,11 @@ class Medio(enum.Enum):
 
 
 class Album(Base):
-    __tablename__ = 'album'
+    __tablename__ = "album"
 
     id = Column(Integer, primary_key=True)
     titulo = Column(String)
     ano = Column(Integer)
     descripcion = Column(String)
     medio = Column(Enum(Medio))
-    canciones = relationship('Cancion', secondary='album_cancion')
+    canciones = relationship("Cancion", secondary="album_cancion")
