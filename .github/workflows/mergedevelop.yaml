@@ -1,4 +1,4 @@
-name: CI
+name: mergedevelop
 
 # Controls when the action will run.
 on:
