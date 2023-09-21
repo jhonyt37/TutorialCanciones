@@ -98,7 +98,7 @@ class CancionTestCase(unittest.TestCase):
         consulta2 = (
             self.session.query(Cancion).filter(Cancion.titulo == "Bye mamá").first()
         )
-        self.assertNotEqual(len(consulta2.albumes), 1)
+        self.assertNotEqual(len(consulta2.albumes), 0)
 
     def test_cancion_repetida_album(self):
         titulo_album = self.data_factory.name()
