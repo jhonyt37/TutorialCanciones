@@ -72,7 +72,7 @@ class AlbumTestCase(unittest.TestCase):
             self.session.query(Album).filter(Album.titulo == titulo_album).first().id
         )
         consulta = self.coleccion.dar_album_por_id(album_id)["titulo"]
-        print("test")
+
         self.assertEqual(consulta, titulo_album)
 
     def test_buscar_albumes_por_titulo(self):
@@ -83,5 +83,5 @@ class AlbumTestCase(unittest.TestCase):
             "Clara luna-Instrumental", anio_album, descripcion_album, "CD"
         )
         consulta2 = self.coleccion.buscar_albumes_por_titulo("clara luna")
-        print("test")
+
         self.assertLessEqual(len(consulta1), len(consulta2))

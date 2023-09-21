@@ -2,7 +2,7 @@ name: Merge_Develop_HU
 on:
    push:
        branches:
-               - 'feature/**'
+               - 'HU**'
 jobs:
    job1:
      name: Merge de develop a rama ${{ github.ref }}

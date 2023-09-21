@@ -1,0 +1,119 @@
+name: CREAR_RELEASE
+
+ # Controls when the action will run.
+on:
+   push:
+       branches:
+               - 'develop'
+jobs:
+  job1:
+     name: Crear rama release
+     runs-on: ubuntu-latest
+     if: ${{ contains(github.event.head_commit.message, 'Release Finalizado')}}
+     steps:
+     - name: Checkout de repositorio
+       uses: actions/checkout@v4
+     - name: Crea rama Release 2.0
+       run: |
+         git checkout -b release/2.0
+         git push -f -u origin release/2.0
+  job2:
+    needs: [job1]
+    name: Ejecuta_Pruebas_develop
+    runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.message, 'Release Finalizado')}}
+    steps:
+    - name: Checkout de repositorio
+      uses: actions/checkout@v4
+      with:
+        ref: develop
+    - name: Configuración de entorno de python
+      uses: actions/setup-python@v2
+      with:
+          python-version: '3.7'
+    - name: Instalación de librerías y dependencias
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Correr pruebas
+      id: correr-pruebas
+      run: python -m unittest discover -s tests
+
+    - name: Validar resultado con errores
+      if: ${{ failure() }}
+      env:
+        MENSAJE_ERROR: Una o varias pruebas fallaron
+      run: echo "::set-output name=respuesta::${MENSAJE_ERROR}"
+    - name: Validar resultado sin errores
+      if: ${{ success() }}
+      env:
+        MENSAJE_EXITO: Todas las pruebas fueron exitosas
+      run: echo "::set-output name=respuesta::${MENSAJE_EXITO}"
+  job3:
+     needs: [job1,job2]
+     name: Merge de develop a rama release/2.0
+     runs-on: ubuntu-latest
+     if: ${{ contains(github.event.head_commit.message, 'Release Finalizado')}}
+     steps:
+     - name: Mezcla develop -> release/2.0
+       uses: tukasz/direct-merge-action@master
+       with:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           source-branch: develop
+           target-branch: release/2.0
+     - name: Validar resultado merge
+       if: ${{ failure() }}
+       env:
+         MENSAJE_ERROR: Error al integrar la rama feature/ con la rama develop
+       run: echo "::set-output name=respuesta::${MENSAJE_ERROR}"
+  job4:
+     needs: [job1,job2,job3]
+     name: Ejecuta_Pruebas
+     runs-on: ubuntu-latest
+     if: ${{ contains(github.event.head_commit.message, 'Release Finalizado')}}
+     steps:
+     - name: Checkout de repositorio
+       uses: actions/checkout@v4
+       with:
+         ref: release/2.0
+     - name: Configuración de entorno de python
+       uses: actions/setup-python@v2
+       with:
+           python-version: '3.7'
+     - name: Instalación de librerías y dependencias
+       run: |
+         python -m pip install --upgrade pip
+         pip install -r requirements.txt
+     - name: Correr pruebas
+       id: correr-pruebas
+       run: python -m unittest discover -s tests
+
+     - name: Validar resultado con errores
+       if: ${{ failure() }}
+       env:
+         MENSAJE_ERROR: Una o varias pruebas fallaron
+       run: echo "::set-output name=respuesta::${MENSAJE_ERROR}"
+     - name: Validar resultado sin errores
+       if: ${{ success() }}
+       env:
+         MENSAJE_EXITO: Todas las pruebas fueron exitosas
+       run: echo "::set-output name=respuesta::${MENSAJE_EXITO}"
+  job5:
+     needs: [job1,job2,job3,job4]
+     name: Merge de rama release/2.0 a main
+     runs-on: ubuntu-latest
+     if: ${{ contains(github.event.head_commit.message, 'Release Finalizado')}}
+     steps:
+     - name: Display branch name
+       run: echo "Branch name is ${{ github.ref }}"
+     - name: Mezcla release/2.0 -> main
+       uses: tukasz/direct-merge-action@master
+       with:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           source-branch: release/2.0
+           target-branch: main
+     - name: Validar resultado merge
+       if: ${{ failure() }}
+       env:
+         MENSAJE_ERROR: Error al integrar rama develop con rama feature/
+       run: echo "::set-output name=respuesta::${MENSAJE_ERROR}"
