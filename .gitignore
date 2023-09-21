@@ -3,8 +3,3 @@ src/modelo/__pycache__/*
 src/logica/__pycache__/*
 src/vista/__pycache__/*
 venv/*
-.coverage
-*.sqlite
-tests/__pycache__/test_album.cpython-311.pyc
-tests/__pycache__/test_cancion.cpython-311.pyc
-*.pyc

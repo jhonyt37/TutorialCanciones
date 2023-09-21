@@ -58,6 +58,7 @@ class AlbumTestCase(unittest.TestCase):
         descripcion_album = self.data_factory.sentence()
         self.coleccion.agregar_album(titulo_album, anio_album, descripcion_album, "CD")
         consulta2 = self.coleccion.dar_albumes()
+        print("test")
         self.assertGreaterEqual(len(consulta2), len(consulta1))
 
     def test_dar_album_por_id(self):
@@ -71,6 +72,7 @@ class AlbumTestCase(unittest.TestCase):
             self.session.query(Album).filter(Album.titulo == titulo_album).first().id
         )
         consulta = self.coleccion.dar_album_por_id(album_id)["titulo"]
+        print("test")
         self.assertEqual(consulta, titulo_album)
 
     def test_buscar_albumes_por_titulo(self):
