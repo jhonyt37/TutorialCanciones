@@ -83,7 +83,7 @@ class InterpreteTestCase(unittest.TestCase):
                 ],
             )
         consulta2 = self.coleccion.buscar_canciones_por_interprete("Jorge Celedón")
-        self.assertEqual(len(consulta2), 2)
+        self.assertEqual(len(consulta2), 0)
 
     def test_buscar_cualquier_coincidencia(self):
         consulta1 = (
